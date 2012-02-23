@@ -918,11 +918,18 @@ static struct max8998_platform_data max8998_pdata = {
 	.num_regulators = ARRAY_SIZE(victory_regulators),
 	.regulators     = victory_regulators,
 	.charger        = &victory_charger,
-        .buck1_set1             = GPIO_BUCK_1_EN_A,
-        .buck1_set2             = GPIO_BUCK_1_EN_B,
-        .buck2_set3             = GPIO_BUCK_2_EN,
-        .buck1_voltage_set      = { 1275000, 1200000, 1050000, 950000 },
-        .buck2_voltage_set      = { 1100000, 1000000 },
+	/* Preloads must be in increasing order of voltage value */
+	.buck1_voltage4	= 950000,
+	.buck1_voltage3	= 1050000,
+	.buck1_voltage2	= 1200000,
+	.buck1_voltage1	= 1275000,
+	.buck2_voltage2	= 1000000,
+	.buck2_voltage1	= 1100000,
+	.buck1_set1	= GPIO_BUCK_1_EN_A,
+	.buck1_set2	= GPIO_BUCK_1_EN_B,
+	.buck2_set3	= GPIO_BUCK_2_EN,
+	.buck1_default_idx = 1,
+	.buck2_default_idx = 0,
         .s3c_adc_channel        = &s3c_adc_channel,
 	.s5pc110_batt_block_temp  = &victory_batt_block_temp,
 };
@@ -1003,8 +1010,8 @@ static struct max8893_subdev_data universal_8893_regulators[] = {
 };
 
 static struct max8893_platform_data max8893_platform_data = {
-        .num_regulators = ARRAY_SIZE(universal_8893_regulators),
-        .regulators     = universal_8893_regulators,
+        .num_subdevs = ARRAY_SIZE(universal_8893_regulators),
+        .subdevs     = universal_8893_regulators,
 };
 
 static struct i2c_board_info i2c_devs12[] __initdata = {
@@ -1259,7 +1266,7 @@ static struct platform_device s3c_device_vibrator = {
                },
 };
 
-static  struct  i2c_gpio_platform_data  i2c4_platdata = {
+static  struct  i2c_gpio_platform_data victory_i2c4_platdata = {
 	.sda_pin		= GPIO_AP_SDA_18V,
 	.scl_pin		= GPIO_AP_SCL_18V,
 	.udelay			= 2,    /* 250KHz */
@@ -1268,13 +1275,13 @@ static  struct  i2c_gpio_platform_data  i2c4_platdata = {
 	.scl_is_output_only	= 0,
 };
 
-static struct platform_device s3c_device_i2c4 = {
+static struct platform_device victory_device_i2c4 = {
 	.name			= "i2c-gpio",
 	.id			= 4,
-	.dev.platform_data	= &i2c4_platdata,
+	.dev.platform_data	= &victory_i2c4_platdata,
 };
 
-static  struct  i2c_gpio_platform_data  i2c5_platdata = {
+static  struct  i2c_gpio_platform_data victory_i2c5_platdata = {
         .sda_pin                = AP_SDA_30V,
         .scl_pin                = AP_SCL_30V,
         .udelay                 = 2,    /* 250KHz */
@@ -1283,15 +1290,15 @@ static  struct  i2c_gpio_platform_data  i2c5_platdata = {
         .scl_is_output_only     = 0,
 };
 
-static struct platform_device s3c_device_i2c5 = {
+static struct platform_device victory_device_i2c5 = {
         .name                           = "i2c-gpio",
         .id                                     = 5,
-        .dev.platform_data      = &i2c5_platdata,
+        .dev.platform_data      = &victory_i2c5_platdata,
 };
  
 
 
-static struct i2c_gpio_platform_data i2c6_platdata = {
+static struct i2c_gpio_platform_data victory_i2c6_platdata = {
 	.sda_pin                = GPIO_AP_PMIC_SDA,
 	.scl_pin                = GPIO_AP_PMIC_SCL,
 	.udelay                 = 2,    /* 250KHz */
@@ -1300,13 +1307,13 @@ static struct i2c_gpio_platform_data i2c6_platdata = {
 	.scl_is_output_only     = 0,
 };
 
-static struct platform_device s3c_device_i2c6 = {
+static struct platform_device victory_device_i2c6 = {
 	.name			= "i2c-gpio",
 	.id			= 6,
-	.dev.platform_data      = &i2c6_platdata,
+	.dev.platform_data      = &victory_i2c6_platdata,
 };
 
-static  struct  i2c_gpio_platform_data  i2c9_platdata = {
+static  struct  i2c_gpio_platform_data victory_i2c9_platdata = {
 	.sda_pin                = FUEL_SDA_18V,
 	.scl_pin                = FUEL_SCL_18V,
 	.udelay                 = 2,    /* 250KHz */
@@ -1315,13 +1322,13 @@ static  struct  i2c_gpio_platform_data  i2c9_platdata = {
 	.scl_is_output_only     = 0,
 };
 
-static struct platform_device s3c_device_i2c9 = {
+static struct platform_device victory_device_i2c9 = {
 	.name			= "i2c-gpio",
 	.id			= 9,
-	.dev.platform_data	= &i2c9_platdata,
+	.dev.platform_data	= &victory_i2c9_platdata,
 };
 
-static  struct  i2c_gpio_platform_data  i2c10_platdata = {
+static  struct  i2c_gpio_platform_data victory_i2c10_platdata = {
 	.sda_pin                = _3_TOUCH_SDA_28V,
 	.scl_pin                = _3_TOUCH_SCL_28V,
 	.udelay                 = 0,    /* 250KHz */
@@ -1330,13 +1337,13 @@ static  struct  i2c_gpio_platform_data  i2c10_platdata = {
 	.scl_is_output_only     = 0,
 };
 
-static struct platform_device s3c_device_i2c10 = {
+static struct platform_device victory_device_i2c10 = {
 	.name                   = "i2c-gpio",
 	.id                     = 10,
-	.dev.platform_data      = &i2c10_platdata,
+	.dev.platform_data      = &victory_i2c10_platdata,
 };
 
-static  struct  i2c_gpio_platform_data  i2c11_platdata = {
+static  struct  i2c_gpio_platform_data victory_i2c11_platdata = {
 	.sda_pin                = GPIO_FM_SDA_28V,
 	.scl_pin                = GPIO_FM_SCL_28V,
 	.udelay                 = 2,    /* 250KHz */
@@ -1345,14 +1352,14 @@ static  struct  i2c_gpio_platform_data  i2c11_platdata = {
 	.scl_is_output_only     = 0,
 };
 
-static struct platform_device s3c_device_i2c11 = {
+static struct platform_device victory_device_i2c11 = {
 	.name			= "i2c-gpio",
 	.id			= 11,
-	.dev.platform_data	= &i2c11_platdata,
+	.dev.platform_data	= &victory_i2c11_platdata,
 };
 
 
-static  struct  i2c_gpio_platform_data  i2c12_platdata = {
+static  struct  i2c_gpio_platform_data victory_i2c12_platdata = {
         .sda_pin                = GPIO_WIMAX_PM_SDA,
         .scl_pin                = GPIO_WIMAX_PM_SCL,
         .udelay                 = 2,    /* 250KHz */
@@ -1361,10 +1368,10 @@ static  struct  i2c_gpio_platform_data  i2c12_platdata = {
         .scl_is_output_only     = 0,
 };
 
-static struct platform_device s3c_device_i2c12 = {
+static struct platform_device victory_device_i2c12 = {
         .name                   = "i2c-gpio",
         .id                     = 12,
-        .dev.platform_data      = &i2c12_platdata,
+        .dev.platform_data      = &victory_i2c12_platdata,
 };
 
 static const int touch_keypad_code[] = {
@@ -1398,7 +1405,7 @@ static struct gpio_event_direct_entry victory_keypad_key_map[] = {
 static struct gpio_event_input_info victory_keypad_key_info = {
 	.info.func = gpio_event_input_func,
 	.info.no_suspend = true,
-	.debounce_time.tv.nsec = 5 * NSEC_PER_MSEC,
+	.debounce_time.tv64 = 5 * NSEC_PER_MSEC,
 	.type = EV_KEY,
 	.keymap = victory_keypad_key_map,
 	.keymap_size = ARRAY_SIZE(victory_keypad_key_map)
@@ -2538,14 +2545,14 @@ static void gp2a_gpio_init(void)
         if (system_rev < 0x0A) {
                 s3c_gpio_cfgpin(S5PV210_GPJ0(1), S3C_GPIO_SFN(GPIO_PS_VOUT_AF));
                 s3c_gpio_setpull(S5PV210_GPJ0(1), S3C_GPIO_PULL_NONE);
-                set_irq_type(IRQ_EINT_GROUP18_BASE + 1, IRQ_TYPE_EDGE_BOTH);
+                irq_set_irq_type(IRQ_EINT_GROUP18_BASE + 1, IRQ_TYPE_EDGE_BOTH);
                 gp2a_pdata.p_irq = (IRQ_EINT_GROUP18_BASE + 1);
                 gp2a_pdata.p_out = S5PV210_GPJ0(1);
 
         } else {
                 s3c_gpio_cfgpin(GPIO_PS_VOUT, S3C_GPIO_SFN(GPIO_PS_VOUT_AF));
                 s3c_gpio_setpull(GPIO_PS_VOUT, S3C_GPIO_PULL_NONE);
-                set_irq_type(IRQ_EINT1, IRQ_TYPE_EDGE_BOTH);
+                irq_set_irq_type(IRQ_EINT1, IRQ_TYPE_EDGE_BOTH);
                 gp2a_pdata.p_irq = gpio_to_irq(GPIO_PS_VOUT);
                 gp2a_pdata.p_out = GPIO_PS_VOUT;
         }
@@ -2736,7 +2743,7 @@ static struct sec_jack_zone sec_jack_zones[] = {
 		.adc_high = 0,
 		.delay_ms = 20,
 		.check_count = 25,
-		.jack_type = SEC_HEADSET_3_POLE_DEVICE,
+		.jack_type = SEC_HEADSET_3POLE,
 	},
 	{
 		/* 0 < adc <= 1000, unstable zone, default to 3pole if it stays
@@ -2745,7 +2752,7 @@ static struct sec_jack_zone sec_jack_zones[] = {
 		.adc_high = 1000,
 		.delay_ms = 10,
 		.check_count = 100,
-		.jack_type = SEC_HEADSET_3_POLE_DEVICE,
+		.jack_type = SEC_HEADSET_3POLE,
 	},
 	{
 		/* 1000 < adc <= 2000, unstable zone, default to 4pole if it
@@ -2754,7 +2761,7 @@ static struct sec_jack_zone sec_jack_zones[] = {
 		.adc_high = 2000,
 		.delay_ms = 10,
 		.check_count = 100,
-		.jack_type = SEC_HEADSET_4_POLE_DEVICE,
+		.jack_type = SEC_HEADSET_4POLE,
 	},
 	{
 		/* 2000 < adc <= 3700, 4 pole zone, default to 4pole if it
@@ -2763,7 +2770,7 @@ static struct sec_jack_zone sec_jack_zones[] = {
 		.adc_high = 3700,
 		.delay_ms = 20,
 		.check_count = 10,
-		.jack_type = SEC_HEADSET_4_POLE_DEVICE,
+		.jack_type = SEC_HEADSET_4POLE,
 	},
 	{
 		/* adc > 3700, unstable zone, default to 3pole if it stays
@@ -2772,7 +2779,7 @@ static struct sec_jack_zone sec_jack_zones[] = {
 		.adc_high = 0x7fffffff,
 		.delay_ms = 10,
 		.check_count = 100,
-		.jack_type = SEC_HEADSET_3_POLE_DEVICE,
+		.jack_type = SEC_HEADSET_3POLE,
 	},
 };
 
@@ -3214,12 +3221,12 @@ static struct platform_device *victory_devices[] __initdata = {
 #if defined(CONFIG_S3C_DEV_I2C2)
 	&s3c_device_i2c2,
 #endif
-	&s3c_device_i2c4,
-	&s3c_device_i2c5,
-	&s3c_device_i2c6,
-	&s3c_device_i2c9,  /* max1704x:fuel_guage */
-	&s3c_device_i2c11, /* optical sensor */
-	&s3c_device_i2c12, /* MAX8893 PMIC */
+	&victory_device_i2c4,
+	&victory_device_i2c5,
+	&victory_device_i2c6,
+	&victory_device_i2c9,  /* max1704x:fuel_guage */
+	&victory_device_i2c11, /* optical sensor */
+	&victory_device_i2c12, /* MAX8893 PMIC */
 #ifdef CONFIG_USB_GADGET
 	&s3c_device_usbgadget,
 #endif
@@ -3249,7 +3256,7 @@ static struct platform_device *victory_devices[] __initdata = {
 
 	&sec_device_battery,
 	&sec_device_leds_gpio,
-	&s3c_device_i2c10,
+	&victory_device_i2c10,
 	&sec_device_switch,  // samsung switch driver
 
 #ifdef CONFIG_S5PV210_POWER_DOMAIN
@@ -3277,7 +3284,7 @@ static struct platform_device *victory_devices[] __initdata = {
 	&sec_device_btsleep,
 	&ram_console_device,
 	&sec_device_wifi,
-        &s3c_device_8893consumer,
+    &s3c_device_8893consumer,
 };
 
 static void __init victory_map_io(void)
@@ -3286,7 +3293,7 @@ static void __init victory_map_io(void)
 	s3c24xx_init_clocks(24000000);
 	s5pv210_gpiolib_init();
 	s3c24xx_init_uarts(victory_uartcfgs, ARRAY_SIZE(victory_uartcfgs));
-	s5p_reserve_bootmem(victory_media_devs, ARRAY_SIZE(victory_media_devs));
+	s5p_reserve_bootmem(victory_media_devs, ARRAY_SIZE(victory_media_devs), S5P_RANGE_MFC);
 #ifdef CONFIG_MTD_ONENAND
 	s5p_device_onenand.name = "s5p-onenand";
 #endif
@@ -3303,28 +3310,24 @@ static void __init victory_fixup(struct machine_desc *desc,
 {
 	mi->bank[0].start = 0x30000000;
 	mi->bank[0].size = 80 * SZ_1M;
-	mi->bank[0].node = 0;
 
 #ifdef CONFIG_DDR_RAM_3G
 	mi->bank[1].start = 0x40000000;
 	mi->bank[1].size = 256 * SZ_1M;
-	mi->bank[1].node = 1;
 
 	mi->bank[2].start = 0x50000000;
 	/* 1M for ram_console buffer */
 	mi->bank[2].size = 127 * SZ_1M;
-	mi->bank[2].node = 2;
 	mi->nr_banks = 3;
 
 	ram_console_start = mi->bank[2].start + mi->bank[2].size;
 	ram_console_size = SZ_1M - SZ_4K;
 #else
-       	mi->bank[1].start = 0x40000000;
+    mi->bank[1].start = 0x40000000;
 	mi->bank[1].size = 255 * SZ_1M;
-	mi->bank[1].node = 1;
 
-       	mi->nr_banks = 2;
-       	ram_console_start = mi->bank[1].start + mi->bank[1].size;
+    mi->nr_banks = 2;
+    ram_console_start = mi->bank[1].start + mi->bank[1].size;
 	ram_console_size = SZ_1M - SZ_4K;
 #endif
 	/* Leave 1K at 0x57fff000 for kexec hardboot page. */
