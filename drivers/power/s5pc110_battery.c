@@ -179,7 +179,7 @@ static ssize_t s3c_bat_store_attrs(struct device *dev, struct device_attribute *
 
 #define SEC_BATTERY_ATTR(_name)								\
 {											\
-	.attr = { .name = #_name, .mode = 0664, .owner = THIS_MODULE },	\
+	.attr = { .name = #_name, .mode = 0664 }, \
 	.show = s3c_bat_show_attrs,							\
 	.store = s3c_bat_store_attrs,								\
 }
@@ -1681,7 +1681,7 @@ static __devinit int max8998_charger_probe(struct platform_device *pdev)
 	setup_timer(&chg->bat_work_timer, s3c_bat_work_timer_func, (unsigned long)chg);
 	setup_timer(&chg->bat_use_timer, s3c_bat_use_timer_func, (unsigned long)chg);
 
-	chg->monitor_wqueue = create_freezeable_workqueue(dev_name(&pdev->dev));
+	chg->monitor_wqueue = create_freezable_workqueue(dev_name(&pdev->dev));
 	if (!chg->monitor_wqueue) {
 		pr_err("%s : Failed to create freezeable workqueue\n", __func__);
 		ret = -ENOMEM;
