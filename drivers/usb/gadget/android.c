@@ -63,9 +63,19 @@ MODULE_VERSION("1.0");
 
 static const char longname[] = "Gadget Android";
 
-/* Default vendor and product IDs, overridden by userspace */
-#define VENDOR_ID		0x18D1
-#define PRODUCT_ID		0x0001
+ #if defined(CONFIG_MACH_VICTORY)	
+extern void s5p_set_otg_dvfs(int);
+static int g_tethering;
+#endif
+/* Default vendor and product IDs, overridden by platform data */
+#ifdef CONFIG_USB_ANDROID_SAMSUNG_COMPOSITE
+#  define VENDOR_ID		0x04e8	/* SAMSUNG */
+/* soonyong.cho : default product id refered as <plat/devs.h> */
+#  define PRODUCT_ID		SAMSUNG_DEBUG_PRODUCT_ID
+#else /* Original VID & PID */
+#  define VENDOR_ID		0x18D1
+#  define PRODUCT_ID		0x0001
+#endif /* CONFIG_USB_ANDROID_SAMSUNG_COMPOSITE */
 
 struct android_usb_function {
 	char *name;

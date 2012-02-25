@@ -758,13 +758,13 @@ struct platform_device s3c_device_ipc = {
 };
 static struct resource s3c_csis_resource[] = {
 	[0] = {
-		.start	= S5P_PA_CSIS,
-		.end	= S5P_PA_CSIS + S5P_SZ_CSIS - 1,
+		.start	= S5P_PA_MIPI_CSIS0,
+		.end	= S5P_PA_MIPI_CSIS0 + S5P_SZ_CSIS - 1,
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
-		.start	= IRQ_MIPICSI,
-		.end	= IRQ_MIPICSI,
+		.start	= IRQ_MIPI_CSIS,
+		.end	= IRQ_MIPI_CSIS,
 		.flags	= IORESOURCE_IRQ,
 	},
 };
