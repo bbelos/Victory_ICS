@@ -63,6 +63,7 @@ extern struct platform_device s3c_device_fb;
 extern struct platform_device s3c_device_fimc0;
 extern struct platform_device s3c_device_fimc1;
 extern struct platform_device s3c_device_fimc2;
+extern struct platform_device s3c_device_csis;
 extern struct platform_device s3c_device_ipc;
 extern struct platform_device s3c_device_mfc;
 extern struct platform_device s3c_device_jpeg;
@@ -218,7 +219,7 @@ extern struct platform_device s5p_device_fimc1;
 extern struct platform_device s5p_device_fimc2;
 extern struct platform_device s5p_device_fimc3;
 
-extern struct platform_device s5p_device_mipi_csis0;
+//extern struct platform_device s5p_device_mipi_csis0;
 extern struct platform_device s5p_device_mipi_csis1;
 
 extern struct platform_device s5p_device_ehci;
