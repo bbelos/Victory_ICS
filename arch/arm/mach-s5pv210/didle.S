@@ -15,6 +15,9 @@
 #include <asm/assembler.h>
 #include <mach/regs-clock.h>
 #include <mach/map.h>
+#include <asm/asm-offsets.h>
+#include <asm/memory.h>
+#include <asm/system.h>
 
 #define NO_L2_CLEAN
 /*
@@ -94,3 +97,125 @@ ENTRY(s5p_didle)
 	b	.
 
 ENDPROC(s5p_didle)
+
+	/* s5pv210_didle_save
+	 *
+	 * entry:
+	 *	r0 = save address (virtual addr of s3c_sleep_save_phys)
+	*/
+
+ENTRY(s5pv210_didle_save)
+
+	stmfd	sp!, { r3 - r12, lr }
+
+	mrc	p15, 0, r4, c13, c0, 0	@ FCSE/PID
+	mrc	p15, 0, r5, c3, c0, 0	@ Domain ID
+	mrc	p15, 0, r6, c2, c0, 0	@ Translation Table BASE0
+	mrc	p15, 0, r7, c2, c0, 1	@ Translation Table BASE1
+	mrc	p15, 0, r8, c2, c0, 2	@ Translation Table Control
+	mrc	p15, 0, r9, c1, c0, 0	@ Control register
+	mrc	p15, 0, r10, c1, c0, 1	@ Auxiliary control register
+	mrc	p15, 0, r11, c1, c0, 2	@ Co-processor access controls
+	mrc	p15, 0, r12, c10, c2, 0	@ Read PRRR
+	mrc	p15, 0, r3, c10, c2, 1	@ READ NMRR
+
+	/* Save CP15 registers */
+	stmia	r0, { r3 - r13 }
+
+	bl s5p_didle
+
+	@@ return to the caller, after having the MMU
+	@@ turned on, this restores the last bits from the
+	@@ stack
+resume_with_mmu:
+	mrc     p15, 0, r0, c1, c0, 1	@enable L2 cache
+	orr     r0, r0, #(1<<1)
+	mcr     p15, 0, r0, c1, c0, 1
+
+	mov	r0, #1
+	/* delete added mmu table list */
+	ldr	r9 , =(PAGE_OFFSET - PLAT_PHYS_OFFSET)
+	add	r4, r4, r9
+	str	r12, [r4]
+
+	ldmfd	sp!, { r3 - r12, pc }
+
+	.ltorg
+
+	/* s5pv210_didle_resume
+	 *
+	 * resume code entry for bootloader to call
+	 *
+	 * we must put this code here in the data segment as we have no
+	 * other way of restoring the stack pointer after sleep, and we
+	 * must not write to the code segment (code is read-only)
+	*/
+
+ENTRY(s5pv210_didle_resume)
+	mov	r0, #PSR_I_BIT | PSR_F_BIT | SVC_MODE
+	msr	cpsr_c, r0
+
+	@@ load UART to allow us to print the two characters for
+	@@ resume debug
+
+	mov	r1, #0
+	mcr	p15, 0, r1, c8, c7, 0		@@ invalidate TLBs
+	mcr	p15, 0, r1, c7, c5, 0		@@ invalidate I Cache
+
+	ldr	r1, =0xe010f008		@ Read INFORM2 register
+	ldr	r0, [r1]		@ Load phy_regs_save value
+	ldmia	r0, { r3 - r13 }
+
+	mcr	p15, 0, r4, c13, c0, 0	@ FCSE/PID
+	mcr	p15, 0, r5, c3, c0, 0	@ Domain ID
+
+	mcr	p15, 0, r8, c2, c0, 2	@ Translation Table Control
+	mcr	p15, 0, r7, c2, c0, 1	@ Translation Table BASE1
+	mcr	p15, 0, r6, c2, c0, 0	@ Translation Table BASE0
+
+	bic	r10, r10, #(1<<1)	@ disable L2cache
+	mcr	p15, 0, r10, c1, c0, 1	@ Auxiliary control register
+
+	mov	r0, #0
+	mcr	p15, 0, r0, c8, c7, 0	@ Invalidate I & D TLB
+
+	mov	r0, #0			@ restore copro access controls
+	mcr	p15, 0, r11, c1, c0, 2	@ Co-processor access controls
+	mcr 	p15, 0, r0, c7, c5, 4
+
+	mcr	p15, 0, r12, c10, c2, 0	@ write PRRR
+	mcr	p15, 0, r3, c10, c2, 1	@ write NMRR
+
+	/* calculate first section address into r8 */
+	mov	r4, r6
+	ldr	r5, =0x3fff
+	bic	r4, r4, r5
+	ldr	r11, =0xe010f000
+	ldr	r10, [r11, #0]
+	mov	r10, r10 ,LSR #18
+	bic	r10, r10, #0x3
+	orr	r4, r4, r10
+
+	/* calculate mmu list value into r9 */
+	mov 	r10, r10, LSL #18
+	ldr	r5, =0x40e
+	orr	r10, r10, r5
+
+	/* back up originally data */
+	ldr	r12, [r4]
+
+	/* Added list about mmu */
+	str	r10, [r4]
+
+	ldr	r2, =resume_with_mmu
+	mcr	p15, 0, r9, c1, c0, 0		@ turn on MMU, etc
+
+        nop
+        nop
+        nop
+        nop
+        nop					@ second-to-last before mmu
+
+	mov	pc, r2				@ go back to virtual address
+
+	.ltorg
