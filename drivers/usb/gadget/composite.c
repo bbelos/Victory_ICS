@@ -407,6 +407,7 @@ static int set_config(struct usb_composite_dev *cdev,
 	} else
 		result = 0;
 
+/*** Figure out what's wrong with this
 	INFO(cdev, "%s speed config #%d: %s\n",
 		({ char *speed;
 		switch (gadget->speed) {
@@ -415,6 +416,7 @@ static int set_config(struct usb_composite_dev *cdev,
 		case USB_SPEED_HIGH:	speed = "high"; break;
 		default:		speed = "?"; break;
 		} ; speed; }), number, c ? c->label : "unconfigured");
+****/
 
 	if (!c)
 		goto done;
@@ -1204,7 +1206,9 @@ static int composite_bind(struct usb_gadget *gadget)
 	if (status)
 		goto fail;
 
+/***** Figure out what's wrong here
 	INFO(cdev, "%s ready\n", composite->name);
+****/
 	return 0;
 
 fail:

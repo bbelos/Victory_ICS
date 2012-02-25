@@ -43,7 +43,6 @@
 #include "usbstring.c"
 #include "config.c"
 #include "epautoconf.c"
-#include "composite.c"
 
 #include "f_mass_storage.c"
 #include "u_serial.c"
@@ -56,10 +55,28 @@
 #include "rndis.c"
 #include "u_ether.c"
 
+#ifdef CONFIG_USB_ANDROID_SAMSUNG_COMPOSITE
+/* soonyong.cho : refer product id and config string of usb from 'arch/arm/plat-samsung/include/plat/devs.h' */
+#  include <plat/devs.h>
+#endif
+#include "composite.c"
+
+#ifdef CONFIG_USB_ANDROID_SAMSUNG_COMPOSITE
+/* soonyong.cho : Added functions and modifed composite framework for samsung composite.
+ *                Developers can make custom composite easily using this custom samsung framework.
+ */
+MODULE_AUTHOR("SoonYong Cho");
+#else
 MODULE_AUTHOR("Mike Lockwood");
+#endif
 MODULE_DESCRIPTION("Android Composite USB Driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION("1.0");
+
+int currentusbstatus;
+#ifdef _SUPPORT_SAMSUNG_AUTOINSTALLER_
+int askon_status;
+#endif
 
 static const char longname[] = "Gadget Android";
 
