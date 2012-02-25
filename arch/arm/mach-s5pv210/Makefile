@@ -41,6 +41,7 @@ obj-$(CONFIG_MACH_VICTORY)	+= aries-btlpm.o
 obj-$(CONFIG_MACH_VICTORY)	+= aries-watchdog.o
 obj-$(CONFIG_MACH_VICTORY)	+= aries-panel.o
 obj-$(CONFIG_MACH_VICTORY)	+= max8893_consumer.o
+obj-$(CONFIG_MACH_VICTORY)  += sec_switch.o
 
 # device support
 
