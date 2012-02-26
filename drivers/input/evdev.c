@@ -61,8 +61,16 @@ static void evdev_pass_event(struct evdev_client *client,
 {
 	/* Interrupts are disabled, just acquire the lock. */
 	spin_lock(&client->buffer_lock);
-
+#ifdef CONFIG_MACH_VICTORY 
+	/*
+	 * Avoid taking wakelock for accelerometer and light sensor for victory
+	 */
+	if (strncmp(client->name, "event8", 6) && strncmp(client->name, "event2", 6))
+		wake_lock_timeout(&client->wake_lock, 5 * HZ);
+#else
 	wake_lock_timeout(&client->wake_lock, 5 * HZ);
+#endif
+
 	client->buffer[client->head++] = *event;
 	client->head &= client->bufsize - 1;
 
@@ -385,8 +393,18 @@ static int evdev_fetch_next_event(struct evdev_client *client,
 	if (have_event) {
 		*event = client->buffer[client->tail++];
 		client->tail &= client->bufsize - 1;
-		if (client->head == client->tail)
+		if (client->head == client->tail) {
+#ifdef CONFIG_MACH_VICTORY
+			/*
+			 * As we dont acquire wakelocks for accelerometer and light sensor 
+			 * hence no unlock call required for victory 
+			 */
+			if (strncmp(client->name, "event8", 6) && strncmp(client->name, "event2", 6)) 
+				wake_unlock(&client->wake_lock);
+#else
 			wake_unlock(&client->wake_lock);
+#endif
+		}
 	}
 
 	spin_unlock_irq(&client->buffer_lock);
