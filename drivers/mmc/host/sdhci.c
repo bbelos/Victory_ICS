@@ -2342,6 +2342,20 @@ int sdhci_suspend_host(struct sdhci_host *host, pm_message_t state)
 	struct mmc_host *mmc = host->mmc;
 
 	sdhci_disable_card_detection(host);
+#ifdef CONFIG_MACH_VICTORY
+	if (host->mmc->index == 0)              //  WiMAX: mmc0
+        {
+                if (wimax_suspend)
+                {
+                        host->mmc->skip_pwrmgt = 1;
+                        wimax_suspend();
+                }
+                else
+                {
+                        host->mmc->skip_pwrmgt = 0;
+                }
+        }
+#endif
 
 	/* Disable tuning since we are suspending */
 	if (host->version >= SDHCI_SPEC_300 && host->tuning_count &&
