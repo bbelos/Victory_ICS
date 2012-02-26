@@ -51,6 +51,28 @@ static void sdhci_send_command(struct sdhci_host *, struct mmc_command *);
 static void sdhci_finish_command(struct sdhci_host *);
 static int sdhci_execute_tuning(struct mmc_host *mmc);
 static void sdhci_tuning_timer(unsigned long data);
+#ifdef CONFIG_MACH_VICTORY
+extern int max8893_ldo_enable_direct(int ldo);  //WIMAX
+extern int max8893_ldo_disable_direct(int ldo); //WIMAX
+//WIMAX suspend/resume
+void (*wimax_suspend)(void) = NULL;
+void (*wimax_resume)(void) = NULL;
+
+void set_wimax_pm(void(*suspend)(void), void(*resume)(void))
+{
+        wimax_suspend = suspend;
+        wimax_resume = resume;
+}
+EXPORT_SYMBOL(set_wimax_pm);
+
+void unset_wimax_pm(void)
+{
+        wimax_suspend = NULL;
+        wimax_resume = NULL;
+}
+EXPORT_SYMBOL(unset_wimax_pm);
+#endif
+
 
 static void sdhci_dumpregs(struct sdhci_host *host)
 {
