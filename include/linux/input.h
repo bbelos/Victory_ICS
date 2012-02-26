@@ -902,6 +902,15 @@ struct input_keymap_entry {
 #define MT_TOOL_PEN		1
 #define MT_TOOL_MAX		1
 
+#ifdef CONFIG_KERNEL_DEBUG_SEC
+#ifdef CONFIG_MACH_FORTE
+#define KERNEL_SEC_FORCED_UPLOAD_1ST_KEY  22       /*camara key*/
+#else
+#define KERNEL_SEC_FORCED_UPLOAD_1ST_KEY  50       /*OK KEY*/
+#endif
+#define KERNEL_SEC_FORCED_UPLOAD_2ND_KEY  42       /*UP KEY*/
+#endif
+
 /*
  * Values describing the status of a force-feedback effect
  */
