@@ -120,6 +120,17 @@ config YAFFS_ALWAYS_CHECK_CHUNK_ERASED
 
 	  If unsure, say Y.
 
+config YAFFS_SHORT_NAMES_IN_RAM
+	bool "Cache short names in RAM"
+	depends on YAFFS_FS
+	default y
+	help
+	  If this config is set, then short names are stored with the
+	  yaffs_Object.  This costs an extra 16 bytes of RAM per object,
+	  but makes look-ups faster.
+
+	  If unsure, say Y.
+
 config YAFFS_EMPTY_LOST_AND_FOUND
 	bool "Empty lost and found on boot"
 	depends on YAFFS_FS
