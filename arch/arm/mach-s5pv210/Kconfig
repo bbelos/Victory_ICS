@@ -134,14 +134,7 @@ help
 IF channel 2 uses 8-bit bus, channel 3 is disabled.
 endmenu
 
-config S5PC110_DEV_ONENAND
-	bool
-	default y if CPU_S5PV210
-	help 
-	  Compile in platform device definition for OneNAND1 controller
-
 menu "S5PC110 Machines"
-
 
 config MACH_AQUILA
 	bool "Aquila"
@@ -281,7 +274,7 @@ config MACH_VICTORY
 	select S3C_DEV_WDT
 	select S3C_DEV_I2C1
 	select S3C_DEV_I2C2
-	select S5PC110_DEV_ONENAND
+	select S5P_DEV_ONENAND
 	select HAVE_PWM
 	select SAMSUNG_DEV_PWM
 	select S3C_DEV_HSMMC
